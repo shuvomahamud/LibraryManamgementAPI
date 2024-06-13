@@ -5,5 +5,10 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
-
+  <ItemGroup>
+	<Folder Include="Interfaces\" />
+  </ItemGroup>
+  <ItemGroup>
+	<Folder Include="Entities\" />
+  </ItemGroup>
 </Project>
