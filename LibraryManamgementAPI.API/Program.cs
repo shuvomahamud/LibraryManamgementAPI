@@ -43,4 +43,17 @@ app.UseEndpoints(endpoints =>
     endpoints.MapControllers();
 });
 
+// Seed the database
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    var context = services.GetRequiredService<LibraryContext>();
+    var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
+    var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+    var loggerFactory = services.GetRequiredService<ILoggerFactory>();
+    var logger = loggerFactory.CreateLogger("DbInitializer");
+
+    DbInitializer.InitializeAsync(context, userManager, roleManager, logger).Wait();
+}
+
 app.Run();
