@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import authService from '../services/authService';
+import { Container, Form, Button } from 'react-bootstrap';
 
 function Login() {
   const [email, setEmail] = useState('');
@@ -19,30 +20,30 @@ function Login() {
   };
 
   return (
-    <div>
+    <Container className="mt-5">
       <h2>Login</h2>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>Email:</label>
-          <input
+      <Form onSubmit={handleSubmit}>
+        <Form.Group controlId="formEmail">
+          <Form.Label>Email</Form.Label>
+          <Form.Control
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
           />
-        </div>
-        <div>
-          <label>Password:</label>
-          <input
+        </Form.Group>
+        <Form.Group controlId="formPassword">
+          <Form.Label>Password</Form.Label>
+          <Form.Control
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
           />
-        </div>
-        <button type="submit">Login</button>
-      </form>
-    </div>
+        </Form.Group>
+        <Button variant="primary" type="submit">Login</Button>
+      </Form>
+    </Container>
   );
 }
 

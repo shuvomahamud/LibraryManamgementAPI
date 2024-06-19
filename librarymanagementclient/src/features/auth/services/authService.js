@@ -1,22 +1,22 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:5000/api/auth'; // Update with your API base URL
+const API_URL = process.env.REACT_APP_API_URL;
 
 const signup = async (userData) => {
-  const response = await axios.post(`${API_URL}/signup`, userData);
+  const response = await axios.post(`${API_URL}/auth/signup`, userData);
   return response.data;
 };
 
 const login = async (userData) => {
-  const response = await axios.post(`${API_URL}/login`, userData);
+  const response = await axios.post(`${API_URL}/auth/login`, userData);
   if (response.data.token) {
-    localStorage.setItem('user', JSON.stringify(response.data));
+    localStorage.setItem('token', response.data.token);
   }
   return response.data;
 };
 
 const logout = () => {
-  localStorage.removeItem('user');
+  localStorage.removeItem('token');
 };
 
 const authService = {

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import authService from '../services/authService';
+import { Container, Form, Button } from 'react-bootstrap';
 
 function Signup() {
   const [firstName, setFirstName] = useState('');
@@ -23,64 +24,64 @@ function Signup() {
   };
 
   return (
-    <div>
+    <Container className="mt-5">
       <h2>Signup</h2>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>First Name:</label>
-          <input
+      <Form onSubmit={handleSubmit}>
+        <Form.Group controlId="formFirstName">
+          <Form.Label>First Name</Form.Label>
+          <Form.Control
             type="text"
             value={firstName}
             onChange={(e) => setFirstName(e.target.value)}
             required
           />
-        </div>
-        <div>
-          <label>Last Name:</label>
-          <input
+        </Form.Group>
+        <Form.Group controlId="formLastName">
+          <Form.Label>Last Name</Form.Label>
+          <Form.Control
             type="text"
             value={lastName}
             onChange={(e) => setLastName(e.target.value)}
             required
           />
-        </div>
-        <div>
-          <label>Email:</label>
-          <input
+        </Form.Group>
+        <Form.Group controlId="formEmail">
+          <Form.Label>Email</Form.Label>
+          <Form.Control
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
           />
-        </div>
-        <div>
-          <label>Password:</label>
-          <input
+        </Form.Group>
+        <Form.Group controlId="formPassword">
+          <Form.Label>Password</Form.Label>
+          <Form.Control
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
           />
-        </div>
-        <div>
-          <label>Address:</label>
-          <input
+        </Form.Group>
+        <Form.Group controlId="formAddress">
+          <Form.Label>Address</Form.Label>
+          <Form.Control
             type="text"
             value={address}
             onChange={(e) => setAddress(e.target.value)}
             required
           />
-        </div>
-        <div>
-          <label>Role:</label>
-          <select value={role} onChange={(e) => setRole(e.target.value)}>
+        </Form.Group>
+        <Form.Group controlId="formRole">
+          <Form.Label>Role</Form.Label>
+          <Form.Control as="select" value={role} onChange={(e) => setRole(e.target.value)}>
             <option value="Customer">Customer</option>
             <option value="Librarian">Librarian</option>
-          </select>
-        </div>
-        <button type="submit">Signup</button>
-      </form>
-    </div>
+          </Form.Control>
+        </Form.Group>
+        <Button variant="primary" type="submit">Signup</Button>
+      </Form>
+    </Container>
   );
 }
 
