@@ -55,7 +55,9 @@ namespace LibraryManagementAPI.API.Controllers
             {
                 var user = await _userManager.FindByEmailAsync(model.Email);
                 var token = GenerateJwtToken(user);
-                return Ok(new { token });
+                var roles = await _userManager.GetRolesAsync(user);
+                var role = roles.FirstOrDefault(); // Assuming one role per user
+                return Ok(new { token, role });
             }
             return Unauthorized(new { message = "Login failed. Invalid email or password." });
         }

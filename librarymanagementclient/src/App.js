@@ -10,6 +10,7 @@ import UserDashboard from './features/userDashboard/components/UserDashboard';
 import AdminDashboard from './features/adminDashboard/components/AdminDashboard';
 import LibrarianDashboard from './features/librarianDashboard/components/LibrarianDashboard';
 import OverdueBooksTable from './features/adminDashboard/components/OverdueBooksTable';
+import Profile from './features/profile/components/Profile';
 import Header from './common/components/Header';
 import Footer from './common/components/Footer';
 
@@ -28,6 +29,7 @@ function App() {
         <Route path="/admin-dashboard" element={<AdminDashboard />} />
         <Route path="/librarian-dashboard" element={<LibrarianDashboard />} />
         <Route path="/overdue-books" element={<OverdueBooksTable />} />
+        <Route path="/profile" element={<Profile />} />
       </Routes>
       <Footer />
     </div>

@@ -11,8 +11,14 @@ function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await authService.login({ email, password });
-      navigate('/user-dashboard');
+      const response = await authService.login({ email, password });
+      if (response.role === 'Admin') {
+        navigate('/admin-dashboard');
+      } else if (response.role === 'Librarian') {
+        navigate('/librarian-dashboard');
+      } else {
+        navigate('/user-dashboard');
+      }
     } catch (error) {
       console.error(error);
       alert('Login failed. Please check your credentials and try again.');
