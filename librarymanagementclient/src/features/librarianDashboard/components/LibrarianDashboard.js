@@ -1,7 +1,25 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Container, Card, Table, Button } from 'react-bootstrap';
+import bookService from '../../books/services/bookService';
 
 const LibrarianDashboard = () => {
+  const [borrowedBooks, setBorrowedBooks] = useState([]);
+  const [overdueBooks, setOverdueBooks] = useState([]);
+
+  useEffect(() => {
+    const fetchBooks = async () => {
+      try {
+        const books = await bookService.getBorrowedBooks();
+        setBorrowedBooks(books.filter(book => !book.isOverdue));
+        setOverdueBooks(books.filter(book => book.isOverdue));
+      } catch (error) {
+        console.error('Error fetching books:', error);
+      }
+    };
+
+    fetchBooks();
+  }, []);
+
   return (
     <Container className="mt-5">
       <h2>Librarian Dashboard</h2>
@@ -24,15 +42,16 @@ const LibrarianDashboard = () => {
               </tr>
             </thead>
             <tbody>
-              {/* Add rows dynamically from API */}
-              <tr>
-                <td>Book Title</td>
-                <td>John Doe</td>
-                <td>2024-06-30</td>
-                <td>
-                  <Button variant="success">Mark as Returned</Button>
-                </td>
-              </tr>
+              {borrowedBooks.map((book) => (
+                <tr key={book.id}>
+                  <td>{book.title}</td>
+                  <td>{book.borrower}</td>
+                  <td>{book.dueDate}</td>
+                  <td>
+                    <Button variant="success">Mark as Returned</Button>
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </Table>
         </Card.Body>
@@ -50,15 +69,16 @@ const LibrarianDashboard = () => {
               </tr>
             </thead>
             <tbody>
-              {/* Add rows dynamically from API */}
-              <tr>
-                <td>Book Title</td>
-                <td>Jane Smith</td>
-                <td>2024-06-15</td>
-                <td>
-                  <Button variant="danger">Mark as Returned</Button>
-                </td>
-              </tr>
+              {overdueBooks.map((book) => (
+                <tr key={book.id}>
+                  <td>{book.title}</td>
+                  <td>{book.borrower}</td>
+                  <td>{book.dueDate}</td>
+                  <td>
+                    <Button variant="danger">Mark as Returned</Button>
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </Table>
         </Card.Body>
