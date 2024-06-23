@@ -6,7 +6,7 @@ const getBooks = async () => {
 };
 
 const getBorrowedBooks = async () => {
-  const response = await axiosInstance.get('/borrowed-books');
+  const response = await axiosInstance.get('/books/borrowed-books');
   return response.data;
 };
 
@@ -25,12 +25,24 @@ const deleteBook = async (id) => {
   return response.data;
 };
 
+const borrowBook = async (id) => {
+  const response = await axiosInstance.post(`/books/${id}/borrow`);
+  return response.data;
+};
+
+const returnBook = async (id) => {
+  const response = await axiosInstance.post(`/books/${id}/return`);
+  return response.data;
+};
+
 const bookService = {
   getBooks,
   getBorrowedBooks,
   addBook,
   updateBook,
   deleteBook,
+  borrowBook,
+  returnBook,
 };
 
 export default bookService;

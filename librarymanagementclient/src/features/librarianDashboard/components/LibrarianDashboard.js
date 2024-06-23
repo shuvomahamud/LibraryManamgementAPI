@@ -20,6 +20,17 @@ const LibrarianDashboard = () => {
     fetchBooks();
   }, []);
 
+  const handleReturn = async (id) => {
+    try {
+      await bookService.returnBook(id);
+      const updatedBorrowedBooks = await bookService.getBorrowedBooks();
+      setBorrowedBooks(updatedBorrowedBooks.filter(book => !book.isOverdue));
+      setOverdueBooks(updatedBorrowedBooks.filter(book => book.isOverdue));
+    } catch (error) {
+      console.error('Error returning book:', error);
+    }
+  };
+
   return (
     <Container className="mt-5">
       <h2>Librarian Dashboard</h2>
@@ -48,7 +59,9 @@ const LibrarianDashboard = () => {
                   <td>{book.borrower}</td>
                   <td>{book.dueDate}</td>
                   <td>
-                    <Button variant="success">Mark as Returned</Button>
+                    <Button variant="success" onClick={() => handleReturn(book.id)}>
+                      Mark as Returned
+                    </Button>
                   </td>
                 </tr>
               ))}
@@ -75,7 +88,9 @@ const LibrarianDashboard = () => {
                   <td>{book.borrower}</td>
                   <td>{book.dueDate}</td>
                   <td>
-                    <Button variant="danger">Mark as Returned</Button>
+                    <Button variant="danger" onClick={() => handleReturn(book.id)}>
+                      Mark as Returned
+                    </Button>
                   </td>
                 </tr>
               ))}

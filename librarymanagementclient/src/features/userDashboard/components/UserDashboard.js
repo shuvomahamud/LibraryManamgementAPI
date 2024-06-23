@@ -1,11 +1,21 @@
 import React, { useEffect, useState } from 'react';
-import { Container, Table } from 'react-bootstrap';
+import { Container, Table, Button } from 'react-bootstrap';
 import bookService from '../../books/services/bookService';
 
 const UserDashboard = () => {
+  const [books, setBooks] = useState([]);
   const [borrowedBooks, setBorrowedBooks] = useState([]);
 
   useEffect(() => {
+    const fetchBooks = async () => {
+      try {
+        const books = await bookService.getBooks();
+        setBooks(books);
+      } catch (error) {
+        console.error('Error fetching books:', error);
+      }
+    };
+
     const fetchBorrowedBooks = async () => {
       try {
         const books = await bookService.getBorrowedBooks();
@@ -15,12 +25,47 @@ const UserDashboard = () => {
       }
     };
 
+    fetchBooks();
     fetchBorrowedBooks();
   }, []);
+
+  const handleBorrow = async (id) => {
+    try {
+      await bookService.borrowBook(id);
+      const updatedBorrowedBooks = await bookService.getBorrowedBooks();
+      setBorrowedBooks(updatedBorrowedBooks);
+    } catch (error) {
+      console.error('Error borrowing book:', error);
+    }
+  };
 
   return (
     <Container className="mt-5">
       <h2>User Dashboard</h2>
+      <h3>Available Books</h3>
+      <Table striped bordered hover>
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Author</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {books.map((book) => (
+            <tr key={book.id}>
+              <td>{book.title}</td>
+              <td>{book.author}</td>
+              <td>
+                <Button variant="primary" onClick={() => handleBorrow(book.id)}>
+                  Borrow
+                </Button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </Table>
+      <h3>Borrowed Books</h3>
       <Table striped bordered hover>
         <thead>
           <tr>

@@ -12,12 +12,10 @@
 
   <ItemGroup>
     <ProjectReference Include="..\LibraryManagementAPI.Domain\LibraryManagementAPI.Domain.csproj" />
+	<ProjectReference Include="..\LibraryManagementAPI.Infrastructure\LibraryManagementAPI.Infrastructure.csproj" />
   </ItemGroup>
   <ItemGroup>
 	<Folder Include="Interfaces\" />
-  </ItemGroup>
-  <ItemGroup>
-	<Folder Include="Services\" />
   </ItemGroup>
 
 </Project>

@@ -28,7 +28,7 @@ function Header() {
           <Nav.Link as={Link} to="/books">Books</Nav.Link>
         </Nav>
         <Nav className="ml-auto">
-          <NavDropdown title={<span className="user-icon"><i className="bi bi-person"></i></span>} id="basic-nav-dropdown" alignRight>
+          <NavDropdown title={<span className="user-icon"><i className="bi bi-person"></i></span>} id="basic-nav-dropdown">
             <NavDropdown.Item as={Link} to="/profile">Profile</NavDropdown.Item>
             <NavDropdown.Item onClick={handleLogout}>Sign Out</NavDropdown.Item>
           </NavDropdown>
