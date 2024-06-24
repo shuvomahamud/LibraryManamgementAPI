@@ -11,16 +11,24 @@ function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      console.log('Submitting login with:', { email, password });
       const response = await authService.login({ email, password });
-      if (response.role === 'Admin') {
-        navigate('/admin-dashboard');
-      } else if (response.role === 'Librarian') {
-        navigate('/librarian-dashboard');
+      console.log('Login response:', response);
+      if (response.token && response.role) {
+        localStorage.setItem('token', response.token); // Store the token in localStorage
+        // Redirect based on user role
+        if (response.role === 'Admin') {
+          navigate('/admin-dashboard');
+        } else if (response.role === 'Librarian') {
+          navigate('/librarian-dashboard');
+        } else {
+          navigate('/user-dashboard');
+        }
       } else {
-        navigate('/user-dashboard');
+        alert('Login failed. Please check your credentials and try again.');
       }
     } catch (error) {
-      console.error(error);
+      console.error('Login failed:', error.response ? error.response.data : error.message);
       alert('Login failed. Please check your credentials and try again.');
     }
   };

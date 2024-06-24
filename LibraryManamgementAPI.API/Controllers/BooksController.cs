@@ -1,36 +1,34 @@
-﻿using System.Threading.Tasks;
-using LibraryManagementAPI.Application.DTOs;
+﻿using LibraryManagementAPI.Application.DTOs;
 using LibraryManagementAPI.Application.Services;
 using LibraryManagementAPI.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Identity;
+using System.Collections.Generic;
+using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace LibraryManagementAPI.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
     public class BooksController : ControllerBase
     {
         private readonly BookService _bookService;
-        private readonly UserManager<ApplicationUser> _userManager;
 
-        public BooksController(BookService bookService, UserManager<ApplicationUser> userManager)
+        public BooksController(BookService bookService)
         {
             _bookService = bookService;
-            _userManager = userManager;
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetBooks()
+        public async Task<ActionResult<IEnumerable<Book>>> GetBooks()
         {
             var books = await _bookService.GetAllBooksAsync();
             return Ok(books);
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetBook(int id)
+        public async Task<ActionResult<Book>> GetBook(int id)
         {
             var book = await _bookService.GetBookByIdAsync(id);
             if (book == null)
@@ -40,24 +38,29 @@ namespace LibraryManagementAPI.API.Controllers
             return Ok(book);
         }
 
+        [Authorize(Roles = "Admin, Librarian")]
         [HttpPost]
-        [Authorize(Roles = "Admin,Librarian")]
-        public async Task<IActionResult> AddBook([FromBody] BookDto bookDto)
+        public async Task<ActionResult<Book>> AddBook(BookDto bookDto)
         {
             await _bookService.AddBookAsync(bookDto);
-            return CreatedAtAction(nameof(GetBook), new { id = bookDto.Title }, bookDto);
+            return CreatedAtAction(nameof(GetBook), new { id = bookDto.Id }, bookDto);
         }
 
+        [Authorize(Roles = "Admin, Librarian")]
         [HttpPut("{id}")]
-        [Authorize(Roles = "Admin,Librarian")]
-        public async Task<IActionResult> UpdateBook(int id, [FromBody] BookDto bookDto)
+        public async Task<IActionResult> UpdateBook(int id, BookDto bookDto)
         {
+            if (id != bookDto.Id)
+            {
+                return BadRequest();
+            }
+
             await _bookService.UpdateBookAsync(id, bookDto);
             return NoContent();
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
-        [Authorize(Roles = "Admin,Librarian")]
         public async Task<IActionResult> DeleteBook(int id)
         {
             await _bookService.DeleteBookAsync(id);
@@ -67,25 +70,23 @@ namespace LibraryManagementAPI.API.Controllers
         [HttpPost("{id}/borrow")]
         public async Task<IActionResult> BorrowBook(int id)
         {
-            var userId = _userManager.GetUserId(User);
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             await _bookService.BorrowBookAsync(id, userId);
             return NoContent();
         }
 
         [HttpPost("{id}/return")]
-        [Authorize(Roles = "Admin,Librarian")]
         public async Task<IActionResult> ReturnBook(int id)
         {
             await _bookService.ReturnBookAsync(id);
             return NoContent();
         }
 
-        [HttpGet("borrowed-books")]
-        public async Task<IActionResult> GetBorrowedBooks()
+        [HttpGet("borrowed")]
+        public async Task<ActionResult<IEnumerable<Book>>> GetBorrowedBooks()
         {
-            var borrowedBooks = await _bookService.GetBorrowedBooksAsync();
-            return Ok(borrowedBooks);
+            var books = await _bookService.GetBorrowedBooksAsync();
+            return Ok(books);
         }
-
     }
 }

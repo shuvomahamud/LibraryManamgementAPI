@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Container, Form, Button } from 'react-bootstrap';
 import bookService from '../services/bookService';
+import { Container, Form, Button } from 'react-bootstrap';
 
 const AddBook = () => {
   const [title, setTitle] = useState('');
@@ -13,7 +13,7 @@ const AddBook = () => {
   const [isbn, setIsbn] = useState('');
   const [pageCount, setPageCount] = useState('');
   const [coverImagePath, setCoverImagePath] = useState('');
-  const [copies, setCopies] = useState('');
+  const [copies, setCopies] = useState(1);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -30,12 +30,14 @@ const AddBook = () => {
       coverImagePath,
       copies,
     };
-
+    console.log('Submitting new book:', newBook);
     try {
-      await bookService.addBook(newBook);
-      navigate('/librarian-dashboard');
+      const response = await bookService.addBook(newBook);
+      console.log('Book added successfully:', response);
+      navigate('/books');
     } catch (error) {
-      console.error('Error adding book:', error);
+      console.error('Failed to add book:', error);
+      alert('Failed to add book. Please try again.');
     }
   };
 
@@ -65,7 +67,6 @@ const AddBook = () => {
           <Form.Label>Description</Form.Label>
           <Form.Control
             as="textarea"
-            rows={3}
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             required
@@ -128,9 +129,7 @@ const AddBook = () => {
             required
           />
         </Form.Group>
-        <Button variant="primary" type="submit">
-          Add Book
-        </Button>
+        <Button variant="primary" type="submit">Add Book</Button>
       </Form>
     </Container>
   );
