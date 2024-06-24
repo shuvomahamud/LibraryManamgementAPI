@@ -19,7 +19,15 @@ namespace LibraryManagementAPI.Application.Services
 
         public async Task<IEnumerable<Book>> GetAllBooksAsync()
         {
-            return await _context.Books.ToListAsync();
+            try
+            {
+                return await _context.Books.ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.Write(ex.ToString());
+            }
+            return null;
         }
 
         public async Task<Book> GetBookByIdAsync(int id)
@@ -40,8 +48,7 @@ namespace LibraryManagementAPI.Application.Services
                 ISBN = bookDto.ISBN,
                 PageCount = bookDto.PageCount,
                 CoverImagePath = bookDto.CoverImagePath,
-                Copies = bookDto.Copies,
-                IsBorrowed = false
+                Copies = bookDto.Copies
             };
 
             _context.Books.Add(book);
@@ -85,49 +92,65 @@ namespace LibraryManagementAPI.Application.Services
 
         public async Task BorrowBookAsync(int id, string userId)
         {
-            var book = await _context.Books.FindAsync(id);
-            if (book == null)
+            var bookCopy = await _context.BookCopies.FirstOrDefaultAsync(bc => bc.BookId == id && !bc.IsBorrowed);
+            if (bookCopy == null)
             {
-                throw new KeyNotFoundException("Book not found");
+                throw new KeyNotFoundException("No available copies of the book found.");
             }
 
-            if (book.Copies <= 0)
-            {
-                throw new InvalidOperationException("No copies available");
-            }
+            bookCopy.IsBorrowed = true;
+            bookCopy.BorrowedDate = DateTime.Now;
+            bookCopy.DueDate = DateTime.Now.AddDays(5);
+            bookCopy.BorrowerId = userId;
 
-            book.Copies--;
-            book.IsBorrowed = true;
-            book.BorrowedDate = DateTime.Now;
-            book.DueDate = DateTime.Now.AddDays(5);
-            book.BorrowerId = userId;
-
-            _context.Books.Update(book);
+            _context.BookCopies.Update(bookCopy);
             await _context.SaveChangesAsync();
         }
 
         public async Task ReturnBookAsync(int id)
         {
-            var book = await _context.Books.FindAsync(id);
-            if (book == null)
+            var bookCopy = await _context.BookCopies.FirstOrDefaultAsync(bc => bc.Id == id && bc.IsBorrowed);
+            if (bookCopy == null)
             {
-                throw new KeyNotFoundException("Book not found");
+                throw new KeyNotFoundException("Borrowed book copy not found.");
             }
 
-            book.Copies++;
-            book.IsBorrowed = false;
-            book.BorrowedDate = null;
-            book.DueDate = null;
-            book.BorrowerId = null;
+            bookCopy.IsBorrowed = false;
+            bookCopy.BorrowedDate = null;
+            bookCopy.DueDate = null;
+            bookCopy.BorrowerId = null;
 
-            _context.Books.Update(book);
+            _context.BookCopies.Update(bookCopy);
             await _context.SaveChangesAsync();
         }
-
-        public async Task<IEnumerable<Book>> GetBorrowedBooksAsync()
+        public async Task<IEnumerable<BorrowedBookDto>> GetBorrowedBooksAsync()
         {
-            return await _context.Books.Where(b => b.IsBorrowed).ToListAsync();
-        }
+            var borrowedBooks = await _context.BookCopies
+                .Where(bc => bc.IsBorrowed)
+                .Join(
+                    _context.Books,
+                    bc => bc.BookId,
+                    b => b.Id,
+                    (bc, b) => new BorrowedBookDto
+                    {
+                        BookCopyId = bc.Id,
+                        BookId = b.Id,
+                        Title = b.Title,
+                        Author = b.Author,
+                        Description = b.Description,
+                        Publisher = b.Publisher,
+                        PublicationDate = b.PublicationDate,
+                        Category = b.Category,
+                        ISBN = b.ISBN,
+                        PageCount = b.PageCount,
+                        CoverImagePath = b.CoverImagePath,
+                        BorrowedDate = bc.BorrowedDate,
+                        DueDate = bc.DueDate,
+                        BorrowerId = bc.BorrowerId
+                    })
+                .ToListAsync();
 
+            return borrowedBooks;
+        }
     }
 }

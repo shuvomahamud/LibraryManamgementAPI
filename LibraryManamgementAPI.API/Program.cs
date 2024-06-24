@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using LibraryManagementAPI.Domain.Entities;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -21,7 +22,10 @@ builder.Services.AddScoped<BookService>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "LibraryManagementAPI", Version = "v1" });
+});
 
 builder.Services.AddCors(options =>
 {
@@ -57,7 +61,7 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "LibraryManagementAPI v1"));
 }
 
 app.UseHttpsRedirection();
@@ -75,7 +79,8 @@ using (var scope = app.Services.CreateScope())
     var context = services.GetRequiredService<LibraryContext>();
     var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
     var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
-    await DbInitializer.InitializeAsync(context, userManager, roleManager);
+    var logger = services.GetRequiredService<ILogger<Program>>();
+    await DbInitializer.InitializeAsync(context, userManager, roleManager, logger);
 }
 
 app.Run();

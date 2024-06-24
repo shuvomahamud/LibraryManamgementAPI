@@ -83,10 +83,10 @@ namespace LibraryManagementAPI.API.Controllers
         }
 
         [HttpGet("borrowed")]
-        public async Task<ActionResult<IEnumerable<Book>>> GetBorrowedBooks()
+        public async Task<ActionResult<IEnumerable<BorrowedBookDto>>> GetBorrowedBooks()
         {
-            var books = await _bookService.GetBorrowedBooksAsync();
-            return Ok(books);
+            var borrowedBooks = await _bookService.GetBorrowedBooksAsync();
+            return Ok(borrowedBooks);
         }
     }
 }

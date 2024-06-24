@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Container, Card, Table, Button } from 'react-bootstrap';
 import bookService from '../../books/services/bookService';
+import Header from '../../../common/components/Header'; // Import Header component
 
 const AdminDashboard = () => {
   const [borrowedBooks, setBorrowedBooks] = useState([]);
@@ -32,73 +33,76 @@ const AdminDashboard = () => {
   };
 
   return (
-    <Container className="mt-5">
-      <h2>Admin Dashboard</h2>
-      <Card className="mb-4">
-        <Card.Header>Manage Books</Card.Header>
-        <Card.Body>
-          <Button variant="primary">Add Book</Button>
-        </Card.Body>
-      </Card>
-      <Card className="mb-4">
-        <Card.Header>Borrowed Books</Card.Header>
-        <Card.Body>
-          <Table striped bordered hover>
-            <thead>
-              <tr>
-                <th>Title</th>
-                <th>Borrower</th>
-                <th>Due Date</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {borrowedBooks.map((book) => (
-                <tr key={book.id}>
-                  <td>{book.title}</td>
-                  <td>{book.borrower}</td>
-                  <td>{book.dueDate}</td>
-                  <td>
-                    <Button variant="success" onClick={() => handleReturn(book.id)}>
-                      Mark as Returned
-                    </Button>
-                  </td>
+    <>
+      <Header /> {/* Include Header component */}
+      <Container className="mt-5">
+        <h2>Admin Dashboard</h2>
+        <Card className="mb-4">
+          <Card.Header>Manage Books</Card.Header>
+          <Card.Body>
+            <Button variant="primary">Add Book</Button>
+          </Card.Body>
+        </Card>
+        <Card className="mb-4">
+          <Card.Header>Borrowed Books</Card.Header>
+          <Card.Body>
+            <Table striped bordered hover>
+              <thead>
+                <tr>
+                  <th>Title</th>
+                  <th>Borrower</th>
+                  <th>Due Date</th>
+                  <th>Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </Table>
-        </Card.Body>
-      </Card>
-      <Card>
-        <Card.Header>Overdue Books</Card.Header>
-        <Card.Body>
-          <Table striped bordered hover>
-            <thead>
-              <tr>
-                <th>Title</th>
-                <th>Borrower</th>
-                <th>Due Date</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {overdueBooks.map((book) => (
-                <tr key={book.id}>
-                  <td>{book.title}</td>
-                  <td>{book.borrower}</td>
-                  <td>{book.dueDate}</td>
-                  <td>
-                    <Button variant="danger" onClick={() => handleReturn(book.id)}>
-                      Mark as Returned
-                    </Button>
-                  </td>
+              </thead>
+              <tbody>
+                {borrowedBooks.map((book) => (
+                  <tr key={book.id}>
+                    <td>{book.title}</td>
+                    <td>{book.borrower}</td>
+                    <td>{book.dueDate}</td>
+                    <td>
+                      <Button variant="success" onClick={() => handleReturn(book.id)}>
+                        Mark as Returned
+                      </Button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </Table>
+          </Card.Body>
+        </Card>
+        <Card>
+          <Card.Header>Overdue Books</Card.Header>
+          <Card.Body>
+            <Table striped bordered hover>
+              <thead>
+                <tr>
+                  <th>Title</th>
+                  <th>Borrower</th>
+                  <th>Due Date</th>
+                  <th>Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </Table>
-        </Card.Body>
-      </Card>
-    </Container>
+              </thead>
+              <tbody>
+                {overdueBooks.map((book) => (
+                  <tr key={book.id}>
+                    <td>{book.title}</td>
+                    <td>{book.borrower}</td>
+                    <td>{book.dueDate}</td>
+                    <td>
+                      <Button variant="danger" onClick={() => handleReturn(book.id)}>
+                        Mark as Returned
+                      </Button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </Table>
+          </Card.Body>
+        </Card>
+      </Container>
+    </>
   );
 };
 

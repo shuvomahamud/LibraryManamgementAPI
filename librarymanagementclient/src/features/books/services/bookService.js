@@ -2,7 +2,7 @@ import axiosInstance from '../../../services/axiosInstance';
 
 const getBooks = async () => {
   try {
-    const response = await axiosInstance.get('/api/books');
+    const response = await axiosInstance.get('/books');
     console.log('getBooks response:', response);
     return response.data;
   } catch (error) {
@@ -13,7 +13,7 @@ const getBooks = async () => {
 
 const getBookById = async (id) => {
   try {
-    const response = await axiosInstance.get(`/api/books/${id}`);
+    const response = await axiosInstance.get(`/books/${id}`);
     console.log('getBookById response:', response);
     return response.data;
   } catch (error) {
@@ -24,7 +24,7 @@ const getBookById = async (id) => {
 
 const addBook = async (book) => {
   try {
-    const response = await axiosInstance.post('/api/books', book);
+    const response = await axiosInstance.post('/books', book);
     console.log('addBook response:', response);
     return response.data;
   } catch (error) {
@@ -35,7 +35,7 @@ const addBook = async (book) => {
 
 const updateBook = async (id, book) => {
   try {
-    const response = await axiosInstance.put(`/api/books/${id}`, book);
+    const response = await axiosInstance.put(`/books/${id}`, book);
     console.log('updateBook response:', response);
     return response.data;
   } catch (error) {
@@ -46,7 +46,7 @@ const updateBook = async (id, book) => {
 
 const deleteBook = async (id) => {
   try {
-    const response = await axiosInstance.delete(`/api/books/${id}`);
+    const response = await axiosInstance.delete(`/books/${id}`);
     console.log('deleteBook response:', response);
     return response.data;
   } catch (error) {
@@ -57,7 +57,7 @@ const deleteBook = async (id) => {
 
 const borrowBook = async (id) => {
   try {
-    const response = await axiosInstance.post(`/api/books/${id}/borrow`);
+    const response = await axiosInstance.post(`/books/${id}/borrow`);
     console.log('borrowBook response:', response);
     return response.data;
   } catch (error) {
@@ -68,7 +68,7 @@ const borrowBook = async (id) => {
 
 const returnBook = async (id) => {
   try {
-    const response = await axiosInstance.post(`/api/books/${id}/return`);
+    const response = await axiosInstance.post(`/books/${id}/return`);
     console.log('returnBook response:', response);
     return response.data;
   } catch (error) {
@@ -79,7 +79,7 @@ const returnBook = async (id) => {
 
 const getBorrowedBooks = async () => {
   try {
-    const response = await axiosInstance.get('/api/books/borrowed');
+    const response = await axiosInstance.get('/books/borrowed');
     console.log('getBorrowedBooks response:', response);
     return response.data;
   } catch (error) {
