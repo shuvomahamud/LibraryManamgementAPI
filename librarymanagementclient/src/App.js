@@ -1,25 +1,25 @@
-import React from "react";
-import { Route, Routes, Navigate } from "react-router-dom";
-import Login from "./features/auth/components/Login";
-import Signup from "./features/auth/components/Signup";
-import BookList from "./features/books/components/BookList";
-import BookDetail from "./features/books/components/BookDetail";
-import AddBook from "./features/books/components/AddBook";
-import EditBook from "./features/books/components/EditBook";
-import UserDashboard from "./features/userDashboard/components/UserDashboard";
-import AdminDashboard from "./features/adminDashboard/components/AdminDashboard";
-import LibrarianDashboard from "./features/librarianDashboard/components/LibrarianDashboard";
-import OverdueBooksTable from "./features/adminDashboard/components/OverdueBooksTable";
-import Profile from "./features/profile/components/Profile";
-import Header from "./common/components/Header";
-import Footer from "./common/components/Footer";
+import React from 'react';
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
+import Login from './features/auth/components/Login';
+import Signup from './features/auth/components/Signup';
+import BookList from './features/books/components/BookList';
+import BookDetail from './features/books/components/BookDetail';
+import AddBook from './features/books/components/AddBook';
+import EditBook from './features/books/components/EditBook';
+import UserDashboard from './features/userDashboard/components/UserDashboard';
+import AdminDashboard from './features/adminDashboard/components/AdminDashboard';
+import LibrarianDashboard from './features/librarianDashboard/components/LibrarianDashboard';
+import OverdueBooksTable from './features/adminDashboard/components/OverdueBooksTable';
+import Profile from './features/profile/components/Profile';
+import Footer from './common/components/Footer';
 
 function App() {
-  const isAuthenticated = !!localStorage.getItem("token");
+  const isAuthenticated = !!localStorage.getItem('token');
+  const role = localStorage.getItem('role');
 
   return (
-    <div>
-      <Header />
+    <Router>
+      {console.log(isAuthenticated)}
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
@@ -36,28 +36,29 @@ function App() {
         <Route
           path="/admin-dashboard"
           element={
-            isAuthenticated ? <AdminDashboard /> : <Navigate to="/login" />
+            isAuthenticated && role === 'Admin' ? (
+              <AdminDashboard />
+            ) : (
+              <Navigate to="/login" />
+            )
           }
         />
         <Route
           path="/librarian-dashboard"
           element={
-            isAuthenticated ? <LibrarianDashboard /> : <Navigate to="/login" />
+            isAuthenticated && role === 'Librarian' ? (
+              <LibrarianDashboard />
+            ) : (
+              <Navigate to="/login" />
+            )
           }
         />
-        <Route
-          path="/overdue-books"
-          element={
-            isAuthenticated ? <OverdueBooksTable /> : <Navigate to="/login" />
-          }
-        />
-        <Route
-          path="/profile"
-          element={isAuthenticated ? <Profile /> : <Navigate to="/login" />}
-        />
+        <Route path="/overdue-books" element={<OverdueBooksTable />} />
+        <Route path="/profile" element={<Profile />} />
+        <Route path="/" element={<Navigate to={isAuthenticated ? (role === 'Admin' ? '/admin-dashboard' : role === 'Librarian' ? '/librarian-dashboard' : '/user-dashboard') : '/login'} />} />
       </Routes>
-      <Footer />
-    </div>
+      {isAuthenticated && <Footer />}
+    </Router>
   );
 }
 

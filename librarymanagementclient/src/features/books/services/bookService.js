@@ -57,7 +57,8 @@ const deleteBook = async (id) => {
 
 const borrowBook = async (id) => {
   try {
-    const response = await axiosInstance.post(`/books/${id}/borrow`);
+    const userId = localStorage.getItem('userId'); // Assuming user info is stored in local storage
+    const response = await axiosInstance.post(`/books/${id}/borrow`, { userId: userId });
     console.log('borrowBook response:', response);
     return response.data;
   } catch (error) {

@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
+using LibraryManagementAPI.Application.Interfaces;
+using LibraryManagementAPI.Infrastructure.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,6 +21,8 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddDefaultTokenProviders();
 
 builder.Services.AddScoped<BookService>();
+builder.Services.AddScoped<AuthService>();
+builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -70,6 +74,19 @@ app.UseCors("AllowAllOrigins");
 
 app.UseAuthentication(); // Ensure authentication middleware is added
 app.UseAuthorization();
+
+app.Use(async (context, next) =>
+{
+    if (context.Request.Method == "OPTIONS")
+    {
+        context.Response.StatusCode = 204;
+        await context.Response.CompleteAsync();
+    }
+    else
+    {
+        await next();
+    }
+});
 
 app.MapControllers();
 

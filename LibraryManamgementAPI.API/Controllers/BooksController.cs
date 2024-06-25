@@ -68,11 +68,11 @@ namespace LibraryManagementAPI.API.Controllers
         }
 
         [HttpPost("{id}/borrow")]
-        public async Task<IActionResult> BorrowBook(int id)
+        public async Task<IActionResult> BorrowBook(int id, [FromBody] BorrowBookRequest request)
         {
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var userId = request.UserId ?? User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             await _bookService.BorrowBookAsync(id, userId);
-            return NoContent();
+              return Ok();
         }
 
         [HttpPost("{id}/return")]
@@ -82,7 +82,7 @@ namespace LibraryManagementAPI.API.Controllers
             return NoContent();
         }
 
-        [HttpGet("borrowed")]
+        [HttpGet("borrowed")]  
         public async Task<ActionResult<IEnumerable<BorrowedBookDto>>> GetBorrowedBooks()
         {
             var borrowedBooks = await _bookService.GetBorrowedBooksAsync();
