@@ -1,13 +1,23 @@
 import React, { useEffect, useState } from 'react';
 import { Container, Table, Button } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
 import bookService from '../../books/services/bookService';
-import Header from '../../../common/components/Header'; // Import Header component
+import Header from '../../../common/components/Header';
 
 const UserDashboard = () => {
   const [books, setBooks] = useState([]);
   const [borrowedBooks, setBorrowedBooks] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
+    const role = localStorage.getItem('role')?.trim();
+    const isAuthenticated = !!localStorage.getItem('token');
+
+    if (!isAuthenticated || role !== 'Customer') {
+      navigate('/');
+      return;
+    }
+
     const fetchBooks = async () => {
       try {
         const books = await bookService.getBooks();
@@ -18,8 +28,9 @@ const UserDashboard = () => {
     };
 
     const fetchBorrowedBooks = async () => {
+      const userId = localStorage.getItem('userId');
       try {
-        const books = await bookService.getBorrowedBooks();
+        const books = await bookService.getBorrowedBooksByUser(userId);
         setBorrowedBooks(books);
       } catch (error) {
         console.error('Error fetching borrowed books:', error);
@@ -28,12 +39,12 @@ const UserDashboard = () => {
 
     fetchBooks();
     fetchBorrowedBooks();
-  }, []);
+  }, [navigate]);
 
   const handleBorrow = async (id) => {
     try {
       await bookService.borrowBook(id);
-      const updatedBorrowedBooks = await bookService.getBorrowedBooks();
+      const updatedBorrowedBooks = await bookService.getBorrowedBooksByUser(localStorage.getItem('userId'));
       setBorrowedBooks(updatedBorrowedBooks);
     } catch (error) {
       console.error('Error borrowing book:', error);
@@ -42,7 +53,7 @@ const UserDashboard = () => {
 
   return (
     <>
-      <Header /> {/* Include Header component */}
+      <Header />
       <Container className="mt-5">
         <h2>User Dashboard</h2>
         <h3>Available Books</h3>
@@ -79,10 +90,10 @@ const UserDashboard = () => {
           </thead>
           <tbody>
             {borrowedBooks.map((book) => (
-              <tr key={book.id}>
+              <tr key={book.bookCopyId}>
                 <td>{book.title}</td>
-                <td>{book.borrowedDate}</td>
-                <td>{book.dueDate}</td>
+                <td>{new Date(book.borrowedDate).toLocaleDateString()}</td>
+                <td>{new Date(book.dueDate).toLocaleDateString()}</td>
               </tr>
             ))}
           </tbody>

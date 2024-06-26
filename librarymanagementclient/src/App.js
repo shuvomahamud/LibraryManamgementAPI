@@ -1,5 +1,5 @@
-import React from 'react';
-import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { BrowserRouter as Router, Route, Routes, useNavigate } from 'react-router-dom';
 import Login from './features/auth/components/Login';
 import Signup from './features/auth/components/Signup';
 import BookList from './features/books/components/BookList';
@@ -13,13 +13,46 @@ import OverdueBooksTable from './features/adminDashboard/components/OverdueBooks
 import Profile from './features/profile/components/Profile';
 import Footer from './common/components/Footer';
 
+var isAuthenticated;
+var role;
+
 function App() {
-  const isAuthenticated = !!localStorage.getItem('token');
-  const role = localStorage.getItem('role');
+  isAuthenticated = !!localStorage.getItem('token');
+  role = localStorage.getItem('role')?.trim() || '';
+  const DefaultRedirect = () => {
+    const navigate = useNavigate();
+
+    useEffect(() => {
+      isAuthenticated = !!localStorage.getItem('token');
+      role = String(localStorage.getItem('role')?.trim() || '');
+      console.log(isAuthenticated + role)
+      if (isAuthenticated) {
+        switch (role) {
+          case 'Admin':
+            navigate('/admin-dashboard', { replace: true });
+            break;
+          case 'Librarian':
+            navigate('/librarian-dashboard', { replace: true });
+            break;
+          case 'Customer':
+            navigate('/user-dashboard', { replace: true });
+            console.log("User issue")
+            break;
+          default:
+            navigate('/login', { replace: true });
+            console.log("Role issue")
+        }
+      } else {
+        console.log("Authentication issue")
+        navigate('/login', { replace: true });
+      }
+    }, [navigate]);
+
+    return null;
+  };
 
   return (
     <Router>
-      {console.log(isAuthenticated)}
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
@@ -30,34 +63,26 @@ function App() {
         <Route
           path="/user-dashboard"
           element={
-            isAuthenticated ? <UserDashboard /> : <Navigate to="/login" />
+            <UserDashboard />
           }
         />
         <Route
           path="/admin-dashboard"
           element={
-            isAuthenticated && role === 'Admin' ? (
-              <AdminDashboard />
-            ) : (
-              <Navigate to="/login" />
-            )
-          }
+          <AdminDashboard />
+        }
         />
         <Route
           path="/librarian-dashboard"
           element={
-            isAuthenticated && role === 'Librarian' ? (
-              <LibrarianDashboard />
-            ) : (
-              <Navigate to="/login" />
-            )
+            <LibrarianDashboard />
           }
         />
         <Route path="/overdue-books" element={<OverdueBooksTable />} />
         <Route path="/profile" element={<Profile />} />
-        <Route path="/" element={<Navigate to={isAuthenticated ? (role === 'Admin' ? '/admin-dashboard' : role === 'Librarian' ? '/librarian-dashboard' : '/user-dashboard') : '/login'} />} />
+        <Route path="/" element={<DefaultRedirect />} />
       </Routes>
-      {isAuthenticated && <Footer />}
+      <Footer />
     </Router>
   );
 }

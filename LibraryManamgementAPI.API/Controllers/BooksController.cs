@@ -82,10 +82,17 @@ namespace LibraryManagementAPI.API.Controllers
             return NoContent();
         }
 
-        [HttpGet("borrowed")]  
-        public async Task<ActionResult<IEnumerable<BorrowedBookDto>>> GetBorrowedBooks()
+        [HttpGet("borrowed")]
+        public async Task<IActionResult> GetAllBorrowedBooks()
         {
-            var borrowedBooks = await _bookService.GetBorrowedBooksAsync();
+            var borrowedBooks = await _bookService.GetAllBorrowedBooksAsync();
+            return Ok(borrowedBooks);
+        }
+
+        [HttpGet("borrowed/user/{userId}")]
+        public async Task<IActionResult> GetBorrowedBooksByUser(string userId)
+        {
+            var borrowedBooks = await _bookService.GetBorrowedBooksByUserAsync(userId);
             return Ok(borrowedBooks);
         }
     }

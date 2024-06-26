@@ -78,16 +78,28 @@ const returnBook = async (id) => {
   }
 };
 
-const getBorrowedBooks = async () => {
+const getAllBorrowedBooks = async () => {
   try {
     const response = await axiosInstance.get('/books/borrowed');
-    console.log('getBorrowedBooks response:', response);
+    console.log('getAllBorrowedBooks response:', response);
     return response.data;
   } catch (error) {
-    console.error('Error fetching borrowed books:', error);
+    console.error('Error fetching all borrowed books:', error);
     throw error;
   }
 };
+
+const getBorrowedBooksByUser = async (userId) => {
+  try {
+    const response = await axiosInstance.get(`/books/borrowed/user/${userId}`);
+    console.log('getBorrowedBooksByUser response:', response);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching borrowed books by user:', error);
+    throw error;
+  }
+};
+
 
 const bookService = {
   getBooks,
@@ -97,7 +109,8 @@ const bookService = {
   deleteBook,
   borrowBook,
   returnBook,
-  getBorrowedBooks,
+  getAllBorrowedBooks,
+  getBorrowedBooksByUser
 };
 
 export default bookService;

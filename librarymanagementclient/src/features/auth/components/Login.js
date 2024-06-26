@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import authService from '../services/authService';
 import { Container, Form, Button } from 'react-bootstrap';
 
@@ -8,20 +8,19 @@ function Login() {
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
 
+  useEffect(() => {
+    const isAuthenticated = !!localStorage.getItem('token');
+    if (isAuthenticated) {
+      navigate('/');
+    }
+  }, [navigate]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const response = await authService.login({ email, password });
-      localStorage.setItem('token', response.token);
-      localStorage.setItem('userId', response.userId); // Save the userId in local storage
-      localStorage.setItem('role', response.role); // Save the role in local storage
-
-      if (response.role === 'Admin') {
-        navigate('/admin-dashboard');
-      } else if (response.role === 'Librarian') {
-        navigate('/librarian-dashboard');
-      } else {
-        navigate('/user-dashboard');
+      if (response.userId) {
+        navigate('/');
       }
     } catch (error) {
       console.error(error);
@@ -53,6 +52,9 @@ function Login() {
         </Form.Group>
         <Button variant="primary" type="submit">Login</Button>
       </Form>
+      <p className="mt-3">
+        Don't have an account? <Link to="/signup">Sign up</Link>
+      </p>
     </Container>
   );
 }

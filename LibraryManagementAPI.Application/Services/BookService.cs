@@ -16,19 +16,25 @@ namespace LibraryManagementAPI.Application.Services
         {
             _context = context;
         }
-
         public async Task<IEnumerable<Book>> GetAllBooksAsync()
         {
             try
             {
-                return await _context.Books.ToListAsync();
+                var availableBooks = await _context.Books
+                    .Where(book => _context.BookCopies
+                        .Where(copy => copy.BookId == book.Id && !copy.IsBorrowed)
+                        .Any())
+                    .ToListAsync();
+
+                return availableBooks;
             }
             catch (Exception ex)
             {
-                Console.Write(ex.ToString());
+                Console.WriteLine(ex.ToString());
+                return null;
             }
-            return null;
         }
+
 
         public async Task<Book> GetBookByIdAsync(int id)
         {
@@ -123,7 +129,37 @@ namespace LibraryManagementAPI.Application.Services
             _context.BookCopies.Update(bookCopy);
             await _context.SaveChangesAsync();
         }
-        public async Task<IEnumerable<BorrowedBookDto>> GetBorrowedBooksAsync()
+        public async Task<IEnumerable<BorrowedBookDto>> GetBorrowedBooksByUserAsync(string userId)
+        {
+            var borrowedBooks = await _context.BookCopies
+                .Where(bc => bc.IsBorrowed && bc.BorrowerId == userId)
+                .Join(
+                    _context.Books,
+                    bc => bc.BookId,
+                    b => b.Id,
+                    (bc, b) => new BorrowedBookDto
+                    {
+                        BookCopyId = bc.Id,
+                        BookId = b.Id,
+                        Title = b.Title,
+                        Author = b.Author,
+                        Description = b.Description,
+                        Publisher = b.Publisher,
+                        PublicationDate = b.PublicationDate,
+                        Category = b.Category,
+                        ISBN = b.ISBN,
+                        PageCount = b.PageCount,
+                        CoverImagePath = b.CoverImagePath,
+                        BorrowedDate = bc.BorrowedDate,
+                        DueDate = bc.DueDate,
+                        BorrowerId = bc.BorrowerId
+                    })
+                .ToListAsync();
+
+            return borrowedBooks;
+        }
+
+        public async Task<IEnumerable<BorrowedBookDto>> GetAllBorrowedBooksAsync()
         {
             var borrowedBooks = await _context.BookCopies
                 .Where(bc => bc.IsBorrowed)

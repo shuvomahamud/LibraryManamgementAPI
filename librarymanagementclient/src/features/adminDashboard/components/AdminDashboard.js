@@ -1,16 +1,26 @@
 import React, { useEffect, useState } from 'react';
 import { Container, Card, Table, Button } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
 import bookService from '../../books/services/bookService';
-import Header from '../../../common/components/Header'; // Import Header component
+import Header from '../../../common/components/Header';
 
 const AdminDashboard = () => {
   const [borrowedBooks, setBorrowedBooks] = useState([]);
   const [overdueBooks, setOverdueBooks] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
+    const role = localStorage.getItem('role')?.trim();
+    const isAuthenticated = !!localStorage.getItem('token');
+
+    if (!isAuthenticated || role !== 'Admin') {
+      navigate('/');
+      return;
+    }
+
     const fetchBooks = async () => {
       try {
-        const books = await bookService.getBorrowedBooks();
+        const books = await bookService.getAllBorrowedBooks();
         setBorrowedBooks(books.filter(book => !book.isOverdue));
         setOverdueBooks(books.filter(book => book.isOverdue));
       } catch (error) {
@@ -19,12 +29,12 @@ const AdminDashboard = () => {
     };
 
     fetchBooks();
-  }, []);
+  }, [navigate]);
 
   const handleReturn = async (id) => {
     try {
       await bookService.returnBook(id);
-      const updatedBorrowedBooks = await bookService.getBorrowedBooks();
+      const updatedBorrowedBooks = await bookService.getAllBorrowedBooks();
       setBorrowedBooks(updatedBorrowedBooks.filter(book => !book.isOverdue));
       setOverdueBooks(updatedBorrowedBooks.filter(book => book.isOverdue));
     } catch (error) {
@@ -34,7 +44,7 @@ const AdminDashboard = () => {
 
   return (
     <>
-      <Header /> {/* Include Header component */}
+      <Header />
       <Container className="mt-5">
         <h2>Admin Dashboard</h2>
         <Card className="mb-4">
@@ -57,12 +67,12 @@ const AdminDashboard = () => {
               </thead>
               <tbody>
                 {borrowedBooks.map((book) => (
-                  <tr key={book.id}>
+                  <tr key={book.bookCopyId}>
                     <td>{book.title}</td>
-                    <td>{book.borrower}</td>
-                    <td>{book.dueDate}</td>
+                    <td>{book.borrowerId}</td>
+                    <td>{new Date(book.dueDate).toLocaleDateString()}</td>
                     <td>
-                      <Button variant="success" onClick={() => handleReturn(book.id)}>
+                      <Button variant="success" onClick={() => handleReturn(book.bookCopyId)}>
                         Mark as Returned
                       </Button>
                     </td>
@@ -86,12 +96,12 @@ const AdminDashboard = () => {
               </thead>
               <tbody>
                 {overdueBooks.map((book) => (
-                  <tr key={book.id}>
+                  <tr key={book.bookCopyId}>
                     <td>{book.title}</td>
-                    <td>{book.borrower}</td>
-                    <td>{book.dueDate}</td>
+                    <td>{book.borrowerId}</td>
+                    <td>{new Date(book.dueDate).toLocaleDateString()}</td>
                     <td>
-                      <Button variant="danger" onClick={() => handleReturn(book.id)}>
+                      <Button variant="danger" onClick={() => handleReturn(book.bookCopyId)}>
                         Mark as Returned
                       </Button>
                     </td>

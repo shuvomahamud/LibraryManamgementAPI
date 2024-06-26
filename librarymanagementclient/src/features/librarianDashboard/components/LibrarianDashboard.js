@@ -1,15 +1,26 @@
 import React, { useEffect, useState } from 'react';
 import { Container, Card, Table, Button } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
 import bookService from '../../books/services/bookService';
+import Header from '../../../common/components/Header';
 
 const LibrarianDashboard = () => {
   const [borrowedBooks, setBorrowedBooks] = useState([]);
   const [overdueBooks, setOverdueBooks] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
+    const role = localStorage.getItem('role')?.trim();
+    const isAuthenticated = !!localStorage.getItem('token');
+
+    if (!isAuthenticated || role !== 'Librarian') {
+      navigate('/');
+      return;
+    }
+
     const fetchBooks = async () => {
       try {
-        const books = await bookService.getBorrowedBooks();
+        const books = await bookService.getAllBorrowedBooks();
         setBorrowedBooks(books.filter(book => !book.isOverdue));
         setOverdueBooks(books.filter(book => book.isOverdue));
       } catch (error) {
@@ -18,12 +29,12 @@ const LibrarianDashboard = () => {
     };
 
     fetchBooks();
-  }, []);
+  }, [navigate]);
 
   const handleReturn = async (id) => {
     try {
       await bookService.returnBook(id);
-      const updatedBorrowedBooks = await bookService.getBorrowedBooks();
+      const updatedBorrowedBooks = await bookService.getAllBorrowedBooks();
       setBorrowedBooks(updatedBorrowedBooks.filter(book => !book.isOverdue));
       setOverdueBooks(updatedBorrowedBooks.filter(book => book.isOverdue));
     } catch (error) {
@@ -32,73 +43,76 @@ const LibrarianDashboard = () => {
   };
 
   return (
-    <Container className="mt-5">
-      <h2>Librarian Dashboard</h2>
-      <Card className="mb-4">
-        <Card.Header>Manage Books</Card.Header>
-        <Card.Body>
-          <Button variant="primary">Add Book</Button>
-        </Card.Body>
-      </Card>
-      <Card className="mb-4">
-        <Card.Header>Borrowed Books</Card.Header>
-        <Card.Body>
-          <Table striped bordered hover>
-            <thead>
-              <tr>
-                <th>Title</th>
-                <th>Borrower</th>
-                <th>Due Date</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {borrowedBooks.map((book) => (
-                <tr key={book.id}>
-                  <td>{book.title}</td>
-                  <td>{book.borrower}</td>
-                  <td>{book.dueDate}</td>
-                  <td>
-                    <Button variant="success" onClick={() => handleReturn(book.id)}>
-                      Mark as Returned
-                    </Button>
-                  </td>
+    <>
+      <Header />
+      <Container className="mt-5">
+        <h2>Librarian Dashboard</h2>
+        <Card className="mb-4">
+          <Card.Header>Manage Books</Card.Header>
+          <Card.Body>
+            <Button variant="primary">Add Book</Button>
+          </Card.Body>
+        </Card>
+        <Card className="mb-4">
+          <Card.Header>Borrowed Books</Card.Header>
+          <Card.Body>
+            <Table striped bordered hover>
+              <thead>
+                <tr>
+                  <th>Title</th>
+                  <th>Borrower</th>
+                  <th>Due Date</th>
+                  <th>Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </Table>
-        </Card.Body>
-      </Card>
-      <Card>
-        <Card.Header>Overdue Books</Card.Header>
-        <Card.Body>
-          <Table striped bordered hover>
-            <thead>
-              <tr>
-                <th>Title</th>
-                <th>Borrower</th>
-                <th>Due Date</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {overdueBooks.map((book) => (
-                <tr key={book.id}>
-                  <td>{book.title}</td>
-                  <td>{book.borrower}</td>
-                  <td>{book.dueDate}</td>
-                  <td>
-                    <Button variant="danger" onClick={() => handleReturn(book.id)}>
-                      Mark as Returned
-                    </Button>
-                  </td>
+              </thead>
+              <tbody>
+                {borrowedBooks.map((book) => (
+                  <tr key={book.bookCopyId}>
+                    <td>{book.title}</td>
+                    <td>{book.borrowerId}</td>
+                    <td>{new Date(book.dueDate).toLocaleDateString()}</td>
+                    <td>
+                      <Button variant="success" onClick={() => handleReturn(book.bookCopyId)}>
+                        Mark as Returned
+                      </Button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </Table>
+          </Card.Body>
+        </Card>
+        <Card>
+          <Card.Header>Overdue Books</Card.Header>
+          <Card.Body>
+            <Table striped bordered hover>
+              <thead>
+                <tr>
+                  <th>Title</th>
+                  <th>Borrower</th>
+                  <th>Due Date</th>
+                  <th>Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </Table>
-        </Card.Body>
-      </Card>
-    </Container>
+              </thead>
+              <tbody>
+                {overdueBooks.map((book) => (
+                  <tr key={book.bookCopyId}>
+                    <td>{book.title}</td>
+                    <td>{book.borrowerId}</td>
+                    <td>{new Date(book.dueDate).toLocaleDateString()}</td>
+                    <td>
+                      <Button variant="danger" onClick={() => handleReturn(book.bookCopyId)}>
+                        Mark as Returned
+                      </Button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </Table>
+          </Card.Body>
+        </Card>
+      </Container>
+    </>
   );
 };
 

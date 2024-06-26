@@ -4,19 +4,28 @@ import authService from '../services/authService';
 import { Container, Form, Button } from 'react-bootstrap';
 
 function Signup() {
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [address, setAddress] = useState('');
-  const [role, setRole] = useState('Customer');
+  const [formData, setFormData] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    password: '',
+    address: '',
+    role: 'Customer' // Default role
+  });
   const navigate = useNavigate();
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await authService.signup({ firstName, lastName, email, password, address, role });
-      navigate('/login');
+      await authService.signup(formData);
+      navigate('/login'); // Redirect to login page after successful signup
     } catch (error) {
       console.error(error);
       alert('Signup failed. Please try again.');
@@ -25,14 +34,15 @@ function Signup() {
 
   return (
     <Container className="mt-5">
-      <h2>Signup</h2>
+      <h2>Sign Up</h2>
       <Form onSubmit={handleSubmit}>
         <Form.Group controlId="formFirstName">
           <Form.Label>First Name</Form.Label>
           <Form.Control
             type="text"
-            value={firstName}
-            onChange={(e) => setFirstName(e.target.value)}
+            name="firstName"
+            value={formData.firstName}
+            onChange={handleChange}
             required
           />
         </Form.Group>
@@ -40,8 +50,9 @@ function Signup() {
           <Form.Label>Last Name</Form.Label>
           <Form.Control
             type="text"
-            value={lastName}
-            onChange={(e) => setLastName(e.target.value)}
+            name="lastName"
+            value={formData.lastName}
+            onChange={handleChange}
             required
           />
         </Form.Group>
@@ -49,8 +60,9 @@ function Signup() {
           <Form.Label>Email</Form.Label>
           <Form.Control
             type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
             required
           />
         </Form.Group>
@@ -58,8 +70,9 @@ function Signup() {
           <Form.Label>Password</Form.Label>
           <Form.Control
             type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            name="password"
+            value={formData.password}
+            onChange={handleChange}
             required
           />
         </Form.Group>
@@ -67,19 +80,25 @@ function Signup() {
           <Form.Label>Address</Form.Label>
           <Form.Control
             type="text"
-            value={address}
-            onChange={(e) => setAddress(e.target.value)}
-            required
+            name="address"
+            value={formData.address}
+            onChange={handleChange}
           />
         </Form.Group>
         <Form.Group controlId="formRole">
           <Form.Label>Role</Form.Label>
-          <Form.Control as="select" value={role} onChange={(e) => setRole(e.target.value)}>
+          <Form.Control
+            as="select"
+            name="role"
+            value={formData.role}
+            onChange={handleChange}
+          >
             <option value="Customer">Customer</option>
             <option value="Librarian">Librarian</option>
+            <option value="Admin">Admin</option>
           </Form.Control>
         </Form.Group>
-        <Button variant="primary" type="submit">Signup</Button>
+        <Button variant="primary" type="submit">Sign Up</Button>
       </Form>
     </Container>
   );
