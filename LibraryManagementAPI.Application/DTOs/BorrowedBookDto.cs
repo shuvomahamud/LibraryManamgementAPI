@@ -18,5 +18,8 @@ namespace LibraryManagementAPI.Application.DTOs
         public DateTime? BorrowedDate { get; set; }
         public DateTime? DueDate { get; set; }
         public string BorrowerId { get; set; }
+        public string BorrowerName { get; set; }
+        public string BorrowerEmail { get; set; }
     }
+
 }

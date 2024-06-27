@@ -123,8 +123,9 @@ namespace LibraryManagementAPI.Application.Services
 
             bookCopy.IsBorrowed = false;
             bookCopy.BorrowedDate = null;
+            bookCopy.IsOverdue = false;
             bookCopy.DueDate = null;
-            bookCopy.BorrowerId = null;
+            bookCopy.BorrowerId = "";
 
             _context.BookCopies.Update(bookCopy);
             await _context.SaveChangesAsync();
@@ -167,22 +168,29 @@ namespace LibraryManagementAPI.Application.Services
                     _context.Books,
                     bc => bc.BookId,
                     b => b.Id,
-                    (bc, b) => new BorrowedBookDto
+                    (bc, b) => new { bc, b })
+                .Join(
+                    _context.Users,
+                    combined => combined.bc.BorrowerId,
+                    user => user.Id,
+                    (combined, user) => new BorrowedBookDto
                     {
-                        BookCopyId = bc.Id,
-                        BookId = b.Id,
-                        Title = b.Title,
-                        Author = b.Author,
-                        Description = b.Description,
-                        Publisher = b.Publisher,
-                        PublicationDate = b.PublicationDate,
-                        Category = b.Category,
-                        ISBN = b.ISBN,
-                        PageCount = b.PageCount,
-                        CoverImagePath = b.CoverImagePath,
-                        BorrowedDate = bc.BorrowedDate,
-                        DueDate = bc.DueDate,
-                        BorrowerId = bc.BorrowerId
+                        BookCopyId = combined.bc.Id,
+                        BookId = combined.b.Id,
+                        Title = combined.b.Title,
+                        Author = combined.b.Author,
+                        Description = combined.b.Description,
+                        Publisher = combined.b.Publisher,
+                        PublicationDate = combined.b.PublicationDate,
+                        Category = combined.b.Category,
+                        ISBN = combined.b.ISBN,
+                        PageCount = combined.b.PageCount,
+                        CoverImagePath = combined.b.CoverImagePath,
+                        BorrowedDate = combined.bc.BorrowedDate,
+                        DueDate = combined.bc.DueDate,
+                        BorrowerId = combined.bc.BorrowerId,
+                        BorrowerName = user.FirstName + " " + user.LastName,
+                        BorrowerEmail = String.IsNullOrEmpty(user.Email)? "" : user.Email
                     })
                 .ToListAsync();
 

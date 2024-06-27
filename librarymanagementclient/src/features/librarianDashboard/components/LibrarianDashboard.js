@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
-import { Container, Card, Table, Button } from 'react-bootstrap';
-import { useNavigate } from 'react-router-dom';
-import bookService from '../../books/services/bookService';
-import Header from '../../../common/components/Header';
+import React, { useEffect, useState } from "react";
+import { Container, Card, Table, Button } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
+import bookService from "../../books/services/bookService";
+import Header from "../../../common/components/Header";
 
 const LibrarianDashboard = () => {
   const [borrowedBooks, setBorrowedBooks] = useState([]);
@@ -10,21 +10,21 @@ const LibrarianDashboard = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const role = localStorage.getItem('role')?.trim();
-    const isAuthenticated = !!localStorage.getItem('token');
+    const role = localStorage.getItem("role")?.trim();
+    const isAuthenticated = !!localStorage.getItem("token");
 
-    if (!isAuthenticated || role !== 'Librarian') {
-      navigate('/');
+    if (!isAuthenticated || role !== "Librarian") {
+      navigate("/");
       return;
     }
 
     const fetchBooks = async () => {
       try {
         const books = await bookService.getAllBorrowedBooks();
-        setBorrowedBooks(books.filter(book => !book.isOverdue));
-        setOverdueBooks(books.filter(book => book.isOverdue));
+        setBorrowedBooks(books.filter((book) => !book.isOverdue));
+        setOverdueBooks(books.filter((book) => book.isOverdue));
       } catch (error) {
-        console.error('Error fetching books:', error);
+        console.error("Error fetching books:", error);
       }
     };
 
@@ -35,10 +35,10 @@ const LibrarianDashboard = () => {
     try {
       await bookService.returnBook(id);
       const updatedBorrowedBooks = await bookService.getAllBorrowedBooks();
-      setBorrowedBooks(updatedBorrowedBooks.filter(book => !book.isOverdue));
-      setOverdueBooks(updatedBorrowedBooks.filter(book => book.isOverdue));
+      setBorrowedBooks(updatedBorrowedBooks.filter((book) => !book.isOverdue));
+      setOverdueBooks(updatedBorrowedBooks.filter((book) => book.isOverdue));
     } catch (error) {
-      console.error('Error returning book:', error);
+      console.error("Error returning book:", error);
     }
   };
 
@@ -60,7 +60,8 @@ const LibrarianDashboard = () => {
               <thead>
                 <tr>
                   <th>Title</th>
-                  <th>Borrower</th>
+                  <th>Borrower Name</th>
+                  <th>Borrower Email</th>
                   <th>Due Date</th>
                   <th>Actions</th>
                 </tr>
@@ -69,10 +70,14 @@ const LibrarianDashboard = () => {
                 {borrowedBooks.map((book) => (
                   <tr key={book.bookCopyId}>
                     <td>{book.title}</td>
-                    <td>{book.borrowerId}</td>
+                    <td>{book.borrowerName}</td>
+                    <td>{book.borrowerEmail}</td>
                     <td>{new Date(book.dueDate).toLocaleDateString()}</td>
                     <td>
-                      <Button variant="success" onClick={() => handleReturn(book.bookCopyId)}>
+                      <Button
+                        variant="success"
+                        onClick={() => handleReturn(book.bookCopyId)}
+                      >
                         Mark as Returned
                       </Button>
                     </td>
@@ -89,7 +94,8 @@ const LibrarianDashboard = () => {
               <thead>
                 <tr>
                   <th>Title</th>
-                  <th>Borrower</th>
+                  <th>Borrower Name</th>
+                  <th>Borrower Email</th>
                   <th>Due Date</th>
                   <th>Actions</th>
                 </tr>
@@ -98,10 +104,14 @@ const LibrarianDashboard = () => {
                 {overdueBooks.map((book) => (
                   <tr key={book.bookCopyId}>
                     <td>{book.title}</td>
-                    <td>{book.borrowerId}</td>
+                    <td>{book.borrowerName}</td>
+                    <td>{book.borrowerEmail}</td>
                     <td>{new Date(book.dueDate).toLocaleDateString()}</td>
                     <td>
-                      <Button variant="danger" onClick={() => handleReturn(book.bookCopyId)}>
+                      <Button
+                        variant="success"
+                        onClick={() => handleReturn(book.bookCopyId)}
+                      >
                         Mark as Returned
                       </Button>
                     </td>
