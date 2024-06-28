@@ -20,9 +20,10 @@ const LibrarianDashboard = () => {
 
     const fetchBooks = async () => {
       try {
-        const books = await bookService.getAllBorrowedBooks();
-        setBorrowedBooks(books.filter((book) => !book.isOverdue));
-        setOverdueBooks(books.filter((book) => book.isOverdue));
+        const borrowedBooks = await bookService.getAllBorrowedBooks();
+        const overdueBooks = await bookService.getOverdueBooks();
+        setBorrowedBooks(borrowedBooks);
+        setOverdueBooks(overdueBooks);
       } catch (error) {
         console.error("Error fetching books:", error);
       }
@@ -35,8 +36,9 @@ const LibrarianDashboard = () => {
     try {
       await bookService.returnBook(id);
       const updatedBorrowedBooks = await bookService.getAllBorrowedBooks();
-      setBorrowedBooks(updatedBorrowedBooks.filter((book) => !book.isOverdue));
-      setOverdueBooks(updatedBorrowedBooks.filter((book) => book.isOverdue));
+        const updatedOverdueBooks = await bookService.getOverdueBooks();
+        setBorrowedBooks(updatedBorrowedBooks);
+        setOverdueBooks(updatedOverdueBooks);
     } catch (error) {
       console.error("Error returning book:", error);
     }

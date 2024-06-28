@@ -95,5 +95,13 @@ namespace LibraryManagementAPI.API.Controllers
             var borrowedBooks = await _bookService.GetBorrowedBooksByUserAsync(userId);
             return Ok(borrowedBooks);
         }
+
+        [HttpGet("overdue")]
+        public async Task<ActionResult<IEnumerable<BorrowedBookDto>>> GetOverdueBooks()
+        {
+            var overdueBooks = await _bookService.GetOverdueBooksAsync();
+            return Ok(overdueBooks);
+        }
+
     }
 }

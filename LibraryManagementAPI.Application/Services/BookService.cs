@@ -196,5 +196,37 @@ namespace LibraryManagementAPI.Application.Services
 
             return borrowedBooks;
         }
+        public async Task<IEnumerable<BorrowedBookDto>> GetOverdueBooksAsync()
+        {
+            var overdueBooks = await _context.BookCopies
+                .Where(bc => bc.DueDate < DateTime.Now && bc.IsBorrowed)
+                .Join(
+                    _context.Books,
+                    bc => bc.BookId,
+                    b => b.Id,
+                    (bc, b) => new BorrowedBookDto
+                    {
+                        BookCopyId = bc.Id,
+                        BookId = b.Id,
+                        Title = b.Title,
+                        Author = b.Author,
+                        BorrowedDate = bc.BorrowedDate,
+                        DueDate = bc.DueDate,
+                        BorrowerId = bc.BorrowerId,
+                        BorrowerName = _context.Users
+                            .Where(u => u.Id == bc.BorrowerId)
+                            .Select(u => u.FirstName + " " + u.LastName)
+                            .FirstOrDefault(),
+                        BorrowerEmail = _context.Users
+                            .Where(u => u.Id == bc.BorrowerId)
+                            .Select(u => u.Email)
+                            .FirstOrDefault()
+                    })
+                .ToListAsync();
+
+            return overdueBooks;
+        }
+
+
     }
 }

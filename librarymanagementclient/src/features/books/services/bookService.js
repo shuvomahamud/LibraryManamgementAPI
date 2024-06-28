@@ -100,6 +100,15 @@ const getBorrowedBooksByUser = async (userId) => {
   }
 };
 
+const getOverdueBooks = async () => {
+  try {
+    const response = await axiosInstance.get('/books/overdue');
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching overdue books:', error);
+    throw error;
+  }
+};
 
 const bookService = {
   getBooks,
@@ -110,7 +119,8 @@ const bookService = {
   borrowBook,
   returnBook,
   getAllBorrowedBooks,
-  getBorrowedBooksByUser
+  getBorrowedBooksByUser,
+  getOverdueBooks
 };
 
 export default bookService;
