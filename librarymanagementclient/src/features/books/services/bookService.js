@@ -3,7 +3,6 @@ import axiosInstance from '../../../services/axiosInstance';
 const getBooks = async () => {
   try {
     const response = await axiosInstance.get('/books');
-    console.log('getBooks response:', response);
     return response.data;
   } catch (error) {
     console.error('Error fetching books:', error);
@@ -25,7 +24,6 @@ const getBookById = async (id) => {
 const addBook = async (book) => {
   try {
     const response = await axiosInstance.post('/books', book);
-    console.log('addBook response:', response);
     return response.data;
   } catch (error) {
     console.error('Error adding book:', error);
@@ -46,11 +44,9 @@ const updateBook = async (id, book) => {
 
 const deleteBook = async (id) => {
   try {
-    const response = await axiosInstance.delete(`/books/${id}`);
-    console.log('deleteBook response:', response);
-    return response.data;
+    await axiosInstance.delete(`/books/${id}`);
   } catch (error) {
-    console.error(`Error deleting book with id ${id}:`, error);
+    console.error('Error deleting book:', error);
     throw error;
   }
 };

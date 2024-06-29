@@ -10,7 +10,7 @@ import UserDashboard from './features/userDashboard/components/UserDashboard';
 import AdminDashboard from './features/adminDashboard/components/AdminDashboard';
 import LibrarianDashboard from './features/librarianDashboard/components/LibrarianDashboard';
 import OverdueBooksTable from './features/adminDashboard/components/OverdueBooksTable';
-import Profile from './features/profile/components/Profile';
+import Profile from './features/profile/components/profile'; 
 import Footer from './common/components/Footer';
 
 var isAuthenticated;

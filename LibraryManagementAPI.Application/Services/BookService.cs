@@ -48,16 +48,30 @@ namespace LibraryManagementAPI.Application.Services
                 Title = bookDto.Title,
                 Author = bookDto.Author,
                 Description = bookDto.Description,
+                CoverImagePath = bookDto.CoverImagePath,
                 Publisher = bookDto.Publisher,
                 PublicationDate = bookDto.PublicationDate,
                 Category = bookDto.Category,
                 ISBN = bookDto.ISBN,
                 PageCount = bookDto.PageCount,
-                CoverImagePath = bookDto.CoverImagePath,
                 Copies = bookDto.Copies
             };
 
             _context.Books.Add(book);
+            await _context.SaveChangesAsync();
+
+            // Create entries in BookCopies table
+            for (int i = 0; i < bookDto.Copies; i++)
+            {
+                var bookCopy = new BookCopy
+                {
+                    BookId = book.Id,
+                    IsBorrowed = false,
+                    IsOverdue = false,
+                    BorrowerId = ""
+                };
+                _context.BookCopies.Add(bookCopy);
+            }
             await _context.SaveChangesAsync();
         }
 
@@ -78,12 +92,25 @@ namespace LibraryManagementAPI.Application.Services
             book.ISBN = bookDto.ISBN;
             book.PageCount = bookDto.PageCount;
             book.CoverImagePath = bookDto.CoverImagePath;
-            book.Copies = bookDto.Copies;
+            if (book.Copies < bookDto.Copies)
+            {
+                for (int i = 0; i < (bookDto.Copies - book.Copies); i++)
+                {
+                    var bookCopy = new BookCopy
+                    {
+                        BookId = book.Id,
+                        IsBorrowed = false,
+                        IsOverdue = false,
+                        BorrowerId = ""
+                    };
+                    _context.BookCopies.Add(bookCopy);
+                }
+                book.Copies = bookDto.Copies;
+            }
 
             _context.Books.Update(book);
             await _context.SaveChangesAsync();
         }
-
         public async Task DeleteBookAsync(int id)
         {
             var book = await _context.Books.FindAsync(id);
@@ -92,10 +119,12 @@ namespace LibraryManagementAPI.Application.Services
                 throw new KeyNotFoundException("Book not found");
             }
 
+            var bookCopies = _context.BookCopies.Where(bc => bc.BookId == id);
+            _context.BookCopies.RemoveRange(bookCopies);
             _context.Books.Remove(book);
+
             await _context.SaveChangesAsync();
         }
-
         public async Task BorrowBookAsync(int id, string userId)
         {
             var bookCopy = await _context.BookCopies.FirstOrDefaultAsync(bc => bc.BookId == id && !bc.IsBorrowed);

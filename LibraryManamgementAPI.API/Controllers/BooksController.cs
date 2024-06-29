@@ -38,15 +38,18 @@ namespace LibraryManagementAPI.API.Controllers
             return Ok(book);
         }
 
-        [Authorize(Roles = "Admin, Librarian")]
         [HttpPost]
-        public async Task<ActionResult<Book>> AddBook(BookDto bookDto)
+        public async Task<IActionResult> AddBook([FromBody] BookDto bookDto)
         {
+            if (bookDto == null)
+            {
+                return BadRequest("Invalid book data.");
+            }
+
             await _bookService.AddBookAsync(bookDto);
-            return CreatedAtAction(nameof(GetBook), new { id = bookDto.Id }, bookDto);
+            return Ok();
         }
 
-        [Authorize(Roles = "Admin, Librarian")]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateBook(int id, BookDto bookDto)
         {
@@ -59,13 +62,20 @@ namespace LibraryManagementAPI.API.Controllers
             return NoContent();
         }
 
-        [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteBook(int id)
         {
-            await _bookService.DeleteBookAsync(id);
-            return NoContent();
+            try
+            {
+                await _bookService.DeleteBookAsync(id);
+                return NoContent();
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound();
+            }
         }
+
 
         [HttpPost("{id}/borrow")]
         public async Task<IActionResult> BorrowBook(int id, [FromBody] BorrowBookRequest request)
