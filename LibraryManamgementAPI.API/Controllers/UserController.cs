@@ -58,5 +58,48 @@ namespace LibraryManagementAPI.API.Controllers
 
             return Ok();
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllUsers()
+        {
+            var users = _userManager.Users.ToList();
+
+            var userList = new List<object>();
+
+            foreach (var user in users)
+            {
+                var roles = await _userManager.GetRolesAsync(user);
+                userList.Add(new
+                {
+                    user.Id,
+                    user.FirstName,
+                    user.LastName,
+                    user.Email,
+                    user.Address,
+                    user.PhoneNumber,
+                    Roles = roles
+                });
+            }
+
+            return Ok(userList);
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteUser(string id)
+        {
+            var user = await _userManager.FindByIdAsync(id);
+            if (user == null)
+            {
+                return NotFound("User not found");
+            }
+
+            var result = await _userManager.DeleteAsync(user);
+            if (!result.Succeeded)
+            {
+                return BadRequest("Failed to delete user");
+            }
+
+            return Ok();
+        }
     }
 }

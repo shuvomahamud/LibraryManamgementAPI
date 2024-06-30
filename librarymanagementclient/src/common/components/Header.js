@@ -26,7 +26,8 @@ function Header() {
           {role === 'Admin' && <Nav.Link as={Link} to="/admin-dashboard">Admin Dashboard</Nav.Link>}
           {role === 'Librarian' && <Nav.Link as={Link} to="/librarian-dashboard">Librarian Dashboard</Nav.Link>}
           {role === 'Customer' && <Nav.Link as={Link} to="/user-dashboard">User Dashboard</Nav.Link>}
-          <Nav.Link as={Link} to="/books">Books</Nav.Link>
+          {(role === 'Admin' || role === 'Librarian') && <Nav.Link as={Link} to="/books">Books</Nav.Link>}
+          {role === 'Admin' &&<Nav.Link as={Link} to="/user-management">User List</Nav.Link>}
         </Nav>
         <Nav className="ml-auto">
           <NavDropdown title={<span className="user-icon"><i className="bi bi-person"></i></span>} id="basic-nav-dropdown">

@@ -50,12 +50,6 @@ const AdminDashboard = () => {
       <Container className="mt-5">
         <h2>Admin Dashboard</h2>
         <Card className="mb-4">
-          <Card.Header>Manage Books</Card.Header>
-          <Card.Body>
-            <Button variant="primary">Add Book</Button>
-          </Card.Body>
-        </Card>
-        <Card className="mb-4">
           <Card.Header>Borrowed Books</Card.Header>
           <Card.Body>
             <Table striped bordered hover>

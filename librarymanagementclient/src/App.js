@@ -3,15 +3,14 @@ import { BrowserRouter as Router, Route, Routes, useNavigate } from 'react-route
 import Login from './features/auth/components/Login';
 import Signup from './features/auth/components/Signup';
 import BookList from './features/books/components/BookList';
-import BookDetail from './features/books/components/BookDetail';
 import AddBook from './features/books/components/AddBook';
 import EditBook from './features/books/components/EditBook';
 import UserDashboard from './features/userDashboard/components/UserDashboard';
 import AdminDashboard from './features/adminDashboard/components/AdminDashboard';
 import LibrarianDashboard from './features/librarianDashboard/components/LibrarianDashboard';
-import OverdueBooksTable from './features/adminDashboard/components/OverdueBooksTable';
-import Profile from './features/profile/components/profile'; 
+import Profile from './features/user/components/profile'; 
 import Footer from './common/components/Footer';
+import UserList from './features/user/components/UserList';
 
 var isAuthenticated;
 var role;
@@ -57,7 +56,6 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/books" element={<BookList />} />
-        <Route path="/books/:id" element={<BookDetail />} />
         <Route path="/add-book" element={<AddBook />} />
         <Route path="/edit-book/:id" element={<EditBook />} />
         <Route
@@ -78,8 +76,8 @@ function App() {
             <LibrarianDashboard />
           }
         />
-        <Route path="/overdue-books" element={<OverdueBooksTable />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/user-management" element={<UserList />} />
         <Route path="/" element={<DefaultRedirect />} />
       </Routes>
       <Footer />
