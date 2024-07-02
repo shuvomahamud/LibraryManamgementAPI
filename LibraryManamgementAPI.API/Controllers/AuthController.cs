@@ -1,4 +1,5 @@
 ﻿using LibraryManagementAPI.Application.DTOs;
+using LibraryManagementAPI.Application.Interfaces;
 using LibraryManagementAPI.Application.Services;
 using LibraryManagementAPI.Domain.Entities;
 using Microsoft.AspNetCore.Identity;
@@ -11,10 +12,10 @@ namespace LibraryManagementAPI.API.Controllers
     [Route("api/[controller]")]
     public class AuthController : ControllerBase
     {
-        private readonly AuthService _authService;
+        private readonly IAuthService _authService;
         private readonly UserManager<ApplicationUser> _userManager;
 
-        public AuthController(AuthService authService, UserManager<ApplicationUser> userManager)
+        public AuthController(IAuthService authService, UserManager<ApplicationUser> userManager)
         {
             _authService = authService;
             _userManager = userManager;

@@ -20,8 +20,8 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<LibraryContext>()
     .AddDefaultTokenProviders();
 
-builder.Services.AddScoped<BookService>();
-builder.Services.AddScoped<AuthService>();
+builder.Services.AddScoped<IBookService, BookService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
 
 builder.Services.AddControllers();
@@ -72,7 +72,7 @@ app.UseHttpsRedirection();
 
 app.UseCors("AllowAllOrigins");
 
-app.UseAuthentication(); // Ensure authentication middleware is added
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.Use(async (context, next) =>

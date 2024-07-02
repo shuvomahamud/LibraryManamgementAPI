@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace LibraryManagementAPI.Application.Services
 {
-    public class AuthService
+    public class AuthService : IAuthService
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IJwtTokenService _jwtTokenService;
@@ -36,12 +36,5 @@ namespace LibraryManagementAPI.Application.Services
                 Role = roles.FirstOrDefault() // Assuming a user has a single role
             };
         }
-    }
-
-    public class AuthenticationResult
-    {
-        public string Token { get; set; }
-        public string UserId { get; set; }
-        public string Role { get; set; }
     }
 }

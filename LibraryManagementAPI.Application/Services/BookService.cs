@@ -2,13 +2,14 @@
 using System.Linq;
 using System.Threading.Tasks;
 using LibraryManagementAPI.Application.DTOs;
+using LibraryManagementAPI.Application.Interfaces;
 using LibraryManagementAPI.Domain.Entities;
 using LibraryManagementAPI.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 
 namespace LibraryManagementAPI.Application.Services
 {
-    public class BookService
+    public class BookService : IBookService
     {
         private readonly LibraryContext _context;
 

@@ -1,4 +1,5 @@
 ﻿using LibraryManagementAPI.Application.DTOs;
+using LibraryManagementAPI.Application.Interfaces;
 using LibraryManagementAPI.Application.Services;
 using LibraryManagementAPI.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
@@ -13,9 +14,9 @@ namespace LibraryManagementAPI.API.Controllers
     [ApiController]
     public class BooksController : ControllerBase
     {
-        private readonly BookService _bookService;
+        private readonly IBookService _bookService;
 
-        public BooksController(BookService bookService)
+        public BooksController(IBookService bookService)
         {
             _bookService = bookService;
         }
